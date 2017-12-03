@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """Connection"""
-DC = 27
-RST = 22
-IRQ = 23
+# RPi3
+#DC = 27
+#RST = 22
+#IRQ = 23
+#PORT = 0
+# CM3
+DC = 12
+RST = 4
+IRQ = 13
 PORT = 0
 
 
@@ -37,7 +43,7 @@ HEAD_COL_TEXT       = (0,0,255)
 HEAD_COL_LINE_PR    = (255,255,255)
 HEAD_COL_FILL_PR    = (0,255,0)
 HEAD_COL_TEXT_PR    = (255,255,255)
-HEAD_FONT_TYPE      = '/usr/share/fonts/truetype/roboto/Roboto-Bold.ttf'
+HEAD_FONT_TYPE      = '/usr/share/fonts/truetype/roboto/Piboto-Bold.ttf'
 HEAD_FONT_SIZE      = 32
 
 KEY_COL_LINE        = (255,255,255)
@@ -46,7 +52,7 @@ KEY_COL_TEXT        = (255,255,255)
 KEY_COL_LINE_PR     = (255,255,255)
 KEY_COL_FILL_PR     = (0,255,0)
 KEY_COL_TEXT_PR     = (255,255,255)
-KEY_FONT_TYPE       = '/usr/share/fonts/truetype/roboto/Roboto-Bold.ttf'
+KEY_FONT_TYPE       = '/usr/share/fonts/truetype/Piboto/Piboto-Bold.ttf'
 KEY_FONT_SIZE       = 32
 
 
@@ -132,6 +138,6 @@ POS_T_N12           = (120,135)
 POS_T_U12           = (120,150)
 POS_T_D12           = (120,195)
 
-FONT_H              = dict(color=(0,0,255), color_err=(255,0,0), font='/usr/share/fonts/truetype/roboto/Roboto-Light.ttf', size=40)
-FONT_T              = dict(color=(255,255,255), color_err=(255,0,0), font='/usr/share/fonts/truetype/roboto/Roboto-Bold.ttf', size=40)
+FONT_H              = dict(color=(0,0,255), color_err=(255,0,0), font='/usr/share/fonts/truetype/Piboto/Piboto-Light.ttf', size=40)
+FONT_T              = dict(color=(255,255,255), color_err=(255,0,0), font='/usr/share/fonts/truetype/Piboto/Piboto-Bold.ttf', size=40)
 

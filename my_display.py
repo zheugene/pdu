@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -157,21 +156,21 @@ def draw_out_V():
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
     color = FONT_T['color']
     if (view == 1):
-        va1 = get_value('meter_ua_1',3)
-        vb1 = get_value('meter_ub_1',3)
-        vc1 = get_value('meter_uc_1',3)
-        va2 = get_value('meter_ua_2',3)
-        vb2 = get_value('meter_ub_2',3)
-        vc2 = get_value('meter_uc_2',3)
+        va1 = get_value('meter_u_a_0',3)
+        vb1 = get_value('meter_u_b_0',3)
+        vc1 = get_value('meter_u_c_0',3)
+        va2 = get_value('meter_u_a_1',3)
+        vb2 = get_value('meter_u_b_1',3)
+        vc2 = get_value('meter_u_c_1',3)
     else:
-        va1 = get_value('meter_ua_p_1',3)
-        vb1 = get_value('meter_ub_p_1',3)
-        vc1 = get_value('meter_uc_p_1',3)
-        va2 = get_value('meter_ua_p_2',3)
-        vb2 = get_value('meter_ub_p_2',3)
-        vc2 = get_value('meter_uc_p_2',3)
-    vf1 = get_value('meter_freq_1',2) + ' Hz'
-    vf2 = get_value('meter_freq_2',2) + ' Hz'
+        va1 = get_value('meter_u_a_p_0',3)
+        vb1 = get_value('meter_u_b_p_0',3)
+        vc1 = get_value('meter_u_c_p_0',3)
+        va2 = get_value('meter_u_a_p_1',3)
+        vb2 = get_value('meter_u_b_p_1',3)
+        vc2 = get_value('meter_u_c_p_1',3)
+    vf1 = get_value('meter_freq_0',2) + ' Hz'
+    vf2 = get_value('meter_freq_1',2) + ' Hz'
     draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
@@ -195,25 +194,25 @@ def draw_out_C():
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
     color = FONT_T['color']
     if (view == 1):
-        va1 = get_value('meter_ia_1',4,2)
-        vb1 = get_value('meter_ib_1',4,2)
-        vc1 = get_value('meter_ic_1',4,2)
-        vn1 = get_value('meter_in_1',4,2)
-        va2 = get_value('meter_ia_2',4,2)
-        vb2 = get_value('meter_ib_2',4,2)
-        vc2 = get_value('meter_ic_2',4,2)
-        vn2 = get_value('meter_in_2',4,2)
-        vt = get_value('meter_itotal',4,2)
+        va1 = get_value('meter_i_a_0',4,2)
+        vb1 = get_value('meter_i_b_0',4,2)
+        vc1 = get_value('meter_i_c_0',4,2)
+        vn1 = get_value('meter_i_n_0',4,2)
+        va2 = get_value('meter_i_a_1',4,2)
+        vb2 = get_value('meter_i_b_1',4,2)
+        vc2 = get_value('meter_i_c_1',4,2)
+        vn2 = get_value('meter_i_n_1',4,2)
+        vt = get_value('meter_i_total',4,2)
     else:
-        va1 = get_value('meter_ia_p_1',4,2)
-        vb1 = get_value('meter_ib_p_1',4,2)
-        vc1 = get_value('meter_ic_p_1',4,2)
-        vn1 = get_value('meter_in_p_1',4,2)
-        va2 = get_value('meter_ia_p_2',4,2)
-        vb2 = get_value('meter_ib_p_2',4,2)
-        vc2 = get_value('meter_ic_p_2',4,2)
-        vn2 = get_value('meter_in_p_2',4,2)
-        vt = get_value('meter_itotal_p',4,2)
+        va1 = get_value('meter_i_a_p_0',4,2)
+        vb1 = get_value('meter_i_b_p_0',4,2)
+        vc1 = get_value('meter_i_c_p_0',4,2)
+        vn1 = get_value('meter_i_n_p_0',4,2)
+        va2 = get_value('meter_i_a_p_1',4,2)
+        vb2 = get_value('meter_i_b_p_1',4,2)
+        vc2 = get_value('meter_i_c_p_1',4,2)
+        vn2 = get_value('meter_i_n_p_1',4,2)
+        vt = get_value('meter_i_total_p',4,2)
     draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
@@ -238,25 +237,25 @@ def draw_out_P():
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
     color = FONT_T['color']
     if (view == 1):
-        va1 = get_value('meter_pa_1',4,2)
-        vb1 = get_value('meter_pb_1',4,2)
-        vc1 = get_value('meter_pc_1',4,2)
-        vn1 = get_value('meter_pn_1',4,2)
-        va2 = get_value('meter_pa_2',4,2)
-        vb2 = get_value('meter_pb_2',4,2)
-        vc2 = get_value('meter_pc_2',4,2)
-        vn2 = get_value('meter_pn_2',4,2)
-        vt = get_value('meter_ptotal',4,2)
+        va1 = get_value('meter_pa_a_0',4,2)
+        vb1 = get_value('meter_pa_b_0',4,2)
+        vc1 = get_value('meter_pa_c_0',4,2)
+        vn1 = get_value('meter_pa_n_0',4,2)
+        va2 = get_value('meter_pa_a_1',4,2)
+        vb2 = get_value('meter_pa_b_1',4,2)
+        vc2 = get_value('meter_pa_c_1',4,2)
+        vn2 = get_value('meter_pa_n_1',4,2)
+        vt = get_value('meter_pa_total',4,2)
     else:
-        va1 = get_value('meter_pa_p_1',4,2)
-        vb1 = get_value('meter_pb_p_1',4,2)
-        vc1 = get_value('meter_pc_p_1',4,2)
-        vn1 = get_value('meter_pn_p_1',4,2)
-        va2 = get_value('meter_pa_p_2',4,2)
-        vb2 = get_value('meter_pb_p_2',4,2)
-        vc2 = get_value('meter_pc_p_2',4,2)
-        vn2 = get_value('meter_pn_p_2',4,2)
-        vt = get_value('meter_itotal_p',4,2)
+        va1 = get_value('meter_pa_a_p_0',4,2)
+        vb1 = get_value('meter_pa_b_p_0',4,2)
+        vc1 = get_value('meter_pa_c_p_0',4,2)
+        vn1 = get_value('meter_pa_n_p_0',4,2)
+        va2 = get_value('meter_pa_a_p_1',4,2)
+        vb2 = get_value('meter_pa_b_p_1',4,2)
+        vc2 = get_value('meter_pa_c_p_1',4,2)
+        vn2 = get_value('meter_pa_n_p_1',4,2)
+        vt = get_value('meter_pa_total_p',4,2)
     draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
@@ -279,13 +278,13 @@ def draw_out_E():
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
     color = FONT_T['color']
     if (view == 1):
-        va1 = get_value('meter_ea_1',4,2)
-        vb1 = get_value('meter_eb_1',4,2)
-        vc1 = get_value('meter_ec_1',4,2)
-        va2 = get_value('meter_ea_2',4,2)
-        vb2 = get_value('meter_eb_2',4,2)
-        vc2 = get_value('meter_ec_2',4,2)
-        vt = get_value('meter_ptotal',4,2)
+        va1 = get_value('meter_e_a_0',4,2)
+        vb1 = get_value('meter_e_b_0',4,2)
+        vc1 = get_value('meter_e_c_0',4,2)
+        va2 = get_value('meter_e_a_1',4,2)
+        vb2 = get_value('meter_e_b_1',4,2)
+        vc2 = get_value('meter_e_c_1',4,2)
+        vt = get_value('meter_e_total',4,2)
     draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
@@ -307,14 +306,14 @@ def draw_out_S():
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
     color = FONT_T['color']
     if (view == 1):
-        vt1 = get_value('meter_temp1',4)+chr(0xb0)+"C" 
-        vt2 = get_value('meter_temp2',4)+chr(0xb0)+"C"
-        vt3 = get_value('meter_temp3',4)+chr(0xb0)+"C"
-        vh1 = get_value('meter_hum1',4)+"%"
-        vh2 = get_value('meter_hum2',4)+"%"
-        vh3 = get_value('meter_hum3',4)+"%"
-        vk1 = get_value('meter_key1',4)
-        vk2 = get_value('meter_key2',4)
+        vt1 = get_value('sensor_t_0',4)+chr(0xb0)+"C" 
+        vt2 = get_value('sensor_t_1',4)+chr(0xb0)+"C"
+        vt3 = get_value('sensor_t_2',4)+chr(0xb0)+"C"
+        vh1 = get_value('sensor_h_0',4)+"%"
+        vh2 = get_value('sensor_h_1',4)+"%"
+        vh3 = get_value('sensor_h_2',4)+"%"
+        vk1 = get_value('sensor_key_0',4)
+        vk2 = get_value('sensor_key_1',4)
     draw_rotated_text(disp.dispBuffer(), vt1, POS_T_A1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vt2, POS_T_B1, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), vt3, POS_T_C1, 0, font, color, False, False)  
