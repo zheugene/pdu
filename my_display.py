@@ -16,9 +16,15 @@ from my_display_conf import *
 #from my_value_list import *
 
 
+PIN_LED_G   = 30
+PIN_LED_R   = 31
+PIN_BEEP    = 32
 
-def get_value(val, dig, dec=0):
-    sv = vals.get(val)
+
+
+
+
+def get_str_value(sv, dig, dec=0):
     if (sv == None):
         sres = '-'
     else:
@@ -38,6 +44,43 @@ def get_value(val, dig, dec=0):
                     break
                 sres += char
     return sres
+
+
+
+def get_value(val, dig, dec=0):
+    sv = vals.get(val)
+    return get_str_value(sv, dig, dec)
+
+def get_val_lev(name, key, dig, dec=0):
+    sv = vals.hget(name, key)
+    l = vals.hget(name, 'l'+key)
+    if (l == None):
+        l = 0
+    return get_str_value(sv, dig, dec), int(l)
+    
+def get_arr_val_lev(name, lsdev, lskey, dig, dec=0):
+    av = []
+    al = []
+    for dev in lsdev:
+        v = []
+        l = []
+        for key in lskey:
+            v.append(vals.hget(name + dev, key))
+            l.append(vals.hget(name + dev, 'l' + key))
+        av.append(v)
+        al.append(l)
+    return av, al 
+
+
+
+def get_value_list(name, dig, dec=0):
+    lsval = vals.get(name)
+    s = []
+    for v in lsval:
+        print(v + ' ')
+        s.append(get_str_value(v[0], dig, dec=0))
+    print('/n')
+    return s
 
 
 def draw_rotated_text(image, text, pos, angle, font, fill=(255,255,255), center_h=True, center_v=True):
@@ -142,7 +185,35 @@ def draw_screen():
     draw_element(disp.dispBuffer(), orient, mode, view, EL_KEY_3, False)
     draw_out_data()
     disp.dispDisplay()
-    
+
+
+
+
+def block_draw_text(buf, arrtext, arrlevel, arru, arrpos, font, dig, dec=0):  
+    ldev = len(arrtext)
+    color = [FONT_T['color'], (255,255,0), (255,0,0)]
+    pos = 0
+#    print(arrtext, arrlevel,arrpos)
+    for i in xrange(ldev):
+        litem = len(arrtext[i])
+        for j in xrange(litem):
+            if (arrlevel[i][j] == None):
+                c = 0
+            else:
+                c = int(arrlevel[i][j])
+            if (arrtext[i][j] == None):
+                text = None
+            else:
+                text = arrtext[i][j]
+#                try
+#                except Exception:
+#                    c = 0
+#                raise
+            text = get_str_value(text, dig, dec) + str(arru[pos])
+            draw_rotated_text(buf, text, arrpos[pos], 0, font, color[c], False, False)        
+            pos += 1
+
+            
 
 def draw_out_V():
     draw.rectangle(SCR_CONF['pos'], outline=SCR_CONF['line'], fill=SCR_CONF['fill'])
@@ -151,120 +222,77 @@ def draw_out_V():
     draw_rotated_text(disp.dispBuffer(), "A", POS_H_A, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "B", POS_H_B, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "C", POS_H_C, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), "Freq1", POS_H_U, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), "Freq2", POS_H_D, 0, font, color, False, False)  
+    draw_rotated_text(disp.dispBuffer(), "Freq", POS_H_U, 0, font, color, False, False)  
+    draw_rotated_text(disp.dispBuffer(), "Temp", POS_H_D, 0, font, color, False, False)  
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
-    color = FONT_T['color']
+    color = [FONT_T['color'], (255,255,0), (255,0,0)]
     if (view == 1):
-        va1 = get_value('meter_u_a_0',3)
-        vb1 = get_value('meter_u_b_0',3)
-        vc1 = get_value('meter_u_c_0',3)
-        va2 = get_value('meter_u_a_1',3)
-        vb2 = get_value('meter_u_b_1',3)
-        vc2 = get_value('meter_u_c_1',3)
-    else:
-        va1 = get_value('meter_u_a_p_0',3)
-        vb1 = get_value('meter_u_b_p_0',3)
-        vc1 = get_value('meter_u_c_p_0',3)
-        va2 = get_value('meter_u_a_p_1',3)
-        vb2 = get_value('meter_u_b_p_1',3)
-        vc2 = get_value('meter_u_c_p_1',3)
-    vf1 = get_value('meter_freq_0',2) + ' Hz'
-    vf2 = get_value('meter_freq_1',2) + ' Hz'
-    draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vf1, POS_T_U12, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), va2, POS_T_A2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb2, POS_T_B2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc2, POS_T_C2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vf2, POS_T_D12, 0, font, color, False, False)  
+        v, l = get_arr_val_lev('meter_u_rms_', ('0'), ('a', 'b', 'c'), 3)
+    vf, lf = get_arr_val_lev('meter_freq_', ('0'), ('f'), 3)
+    vt, lt = get_arr_val_lev('meter_temp_', ('0'), ('t'), 3)
+
+#    vf0 = get_value('meter_freq_0',2) + ' Hz'
+#    vt0 = get_value('meter_temp_0',2) + chr(0xb0) + 'C'
+    pos = [POS_T_A1, POS_T_B1, POS_T_C1]
+    u = ['', '', '', '', '', '', '']
+    block_draw_text(disp.dispBuffer(), v, l, u, pos, font, 3)
+    u = ['Hz']
+    block_draw_text(disp.dispBuffer(), vf, lf, u, [POS_T_U12], font, 3)
+    u = [chr(0xb0)+'C'] 
+    block_draw_text(disp.dispBuffer(), vt, lt, u, [POS_T_D12], font, 3)
+#    draw_rotated_text(disp.dispBuffer(), vf0, POS_T_U12, 0, font, color[0], False, False)  
+#    draw_rotated_text(disp.dispBuffer(), vt0, POS_T_D12, 0, font, color[0], False, False)  
 
 
 def draw_out_C():
     draw.rectangle(SCR_CONF['pos'], outline=SCR_CONF['line'], fill=SCR_CONF['fill'])
-    draw.rectangle(SCR_LINE['pos'], outline=SCR_LINE['line'], fill=SCR_LINE['fill'])
+#    draw.rectangle(SCR_LINE['pos'], outline=SCR_LINE['line'], fill=SCR_LINE['fill'])
     font = ImageFont.truetype(FONT_H['font'], FONT_H['size'])
     color = FONT_H['color']
     draw_rotated_text(disp.dispBuffer(), "A", POS_H_A, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "B", POS_H_B, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "C", POS_H_C, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), "N", POS_H_N, 0, font, color, False, False)  
+#    draw_rotated_text(disp.dispBuffer(), "N", POS_H_N, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "Total", POS_H_D, 0, font, color, False, False)  
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
-    color = FONT_T['color']
+    color = [FONT_T['color'], (255,255,0), (255,0,0)]
     if (view == 1):
-        va1 = get_value('meter_i_a_0',4,2)
-        vb1 = get_value('meter_i_b_0',4,2)
-        vc1 = get_value('meter_i_c_0',4,2)
-        vn1 = get_value('meter_i_n_0',4,2)
-        va2 = get_value('meter_i_a_1',4,2)
-        vb2 = get_value('meter_i_b_1',4,2)
-        vc2 = get_value('meter_i_c_1',4,2)
-        vn2 = get_value('meter_i_n_1',4,2)
-        vt = get_value('meter_i_total',4,2)
+        v, l = get_arr_val_lev('meter_i_rms_', ('0','1'), ('a', 'b', 'c'), 3)
+        vt, lt = get_arr_val_lev('meter_i_rms_total', (''), ('t'), 3)
     else:
-        va1 = get_value('meter_i_a_p_0',4,2)
-        vb1 = get_value('meter_i_b_p_0',4,2)
-        vc1 = get_value('meter_i_c_p_0',4,2)
-        vn1 = get_value('meter_i_n_p_0',4,2)
-        va2 = get_value('meter_i_a_p_1',4,2)
-        vb2 = get_value('meter_i_b_p_1',4,2)
-        vc2 = get_value('meter_i_c_p_1',4,2)
-        vn2 = get_value('meter_i_n_p_1',4,2)
-        vt = get_value('meter_i_total_p',4,2)
-    draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vn1, POS_T_N1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), va2, POS_T_A2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb2, POS_T_B2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc2, POS_T_C2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vn2, POS_T_N2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vt, POS_T_D12, 0, font, color, False, False)  
+        v, l = get_arr_val_lev('meter_i_rms_p_', ('0','1'), ('a', 'b', 'c'), 3)
+        vt, lt = get_arr_val_lev('meter_i_rms_p_total', (''), ('t'), 3)
+    pos = [POS_T_A1, POS_T_B1, POS_T_C1, POS_T_A2, POS_T_B2, POS_T_C2]
+    u = ['', '', '', '', '', '', '']
+    block_draw_text(disp.dispBuffer(), v, l, u, pos, font, 4, 3)
+    block_draw_text(disp.dispBuffer(), vt, lt, u, [POS_T_D12], font, 4, 3)
 
     
 def draw_out_P():
     draw.rectangle(SCR_CONF['pos'], outline=SCR_CONF['line'], fill=SCR_CONF['fill'])
-    draw.rectangle(SCR_LINE['pos'], outline=SCR_LINE['line'], fill=SCR_LINE['fill'])
+#    draw.rectangle(SCR_LINE['pos'], outline=SCR_LINE['line'], fill=SCR_LINE['fill'])
     font = ImageFont.truetype(FONT_H['font'], FONT_H['size'])
     color = FONT_H['color']
     draw_rotated_text(disp.dispBuffer(), "A", POS_H_A, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "B", POS_H_B, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "C", POS_H_C, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), "N", POS_H_N, 0, font, color, False, False)  
+#    draw_rotated_text(disp.dispBuffer(), "N", POS_H_N, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "Total", POS_H_D, 0, font, color, False, False)  
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
-    color = FONT_T['color']
+    color = [FONT_T['color'], (255,255,0), (255,0,0)]
     if (view == 1):
-        va1 = get_value('meter_pa_a_0',4,2)
-        vb1 = get_value('meter_pa_b_0',4,2)
-        vc1 = get_value('meter_pa_c_0',4,2)
-        vn1 = get_value('meter_pa_n_0',4,2)
-        va2 = get_value('meter_pa_a_1',4,2)
-        vb2 = get_value('meter_pa_b_1',4,2)
-        vc2 = get_value('meter_pa_c_1',4,2)
-        vn2 = get_value('meter_pa_n_1',4,2)
-        vt = get_value('meter_pa_total',4,2)
-    else:
-        va1 = get_value('meter_pa_a_p_0',4,2)
-        vb1 = get_value('meter_pa_b_p_0',4,2)
-        vc1 = get_value('meter_pa_c_p_0',4,2)
-        vn1 = get_value('meter_pa_n_p_0',4,2)
-        va2 = get_value('meter_pa_a_p_1',4,2)
-        vb2 = get_value('meter_pa_b_p_1',4,2)
-        vc2 = get_value('meter_pa_c_p_1',4,2)
-        vn2 = get_value('meter_pa_n_p_1',4,2)
-        vt = get_value('meter_pa_total_p',4,2)
-    draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vn1, POS_T_N1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), va2, POS_T_A2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb2, POS_T_B2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc2, POS_T_C2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vn2, POS_T_N2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vt, POS_T_D12, 0, font, color, False, False)  
+        v, l = get_arr_val_lev('meter_pa_', ('0','1'), ('a', 'b', 'c'), 3)
+        vt, lt = get_arr_val_lev('meter_pa_total', (''), ('t'), 3)
+    elif (view == 2):
+        v, l = get_arr_val_lev('meter_pra_', ('0','1'), ('a', 'b', 'c'), 3)
+        vt, lt = get_arr_val_lev('meter_pra_total', (''), ('t'), 3)
+    elif (view == 3):
+        v, l = get_arr_val_lev('meter_pap_', ('0','1'), ('a', 'b', 'c'), 3)
+        vt, lt = get_arr_val_lev('meter_pap_total', (''), ('t'), 3)
+    pos = [POS_T_A1, POS_T_B1, POS_T_C1, POS_T_A2, POS_T_B2, POS_T_C2]
+    u = ['', '', '', '', '', '', '']
+    block_draw_text(disp.dispBuffer(), v, l, u, pos, font, 3)
+    block_draw_text(disp.dispBuffer(), vt, lt, u, [POS_T_D12], font, 3)
 
 
 def draw_out_E():
@@ -276,22 +304,14 @@ def draw_out_E():
     draw_rotated_text(disp.dispBuffer(), "C", POS_H_C, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "Total", POS_H_D, 0, font, color, False, False)  
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
-    color = FONT_T['color']
+    color = [FONT_T['color'], (255,255,0), (255,0,0)]
     if (view == 1):
-        va1 = get_value('meter_e_a_0',4,2)
-        vb1 = get_value('meter_e_b_0',4,2)
-        vc1 = get_value('meter_e_c_0',4,2)
-        va2 = get_value('meter_e_a_1',4,2)
-        vb2 = get_value('meter_e_b_1',4,2)
-        vc2 = get_value('meter_e_c_1',4,2)
-        vt = get_value('meter_e_total',4,2)
-    draw_rotated_text(disp.dispBuffer(), va1, POS_T_A1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb1, POS_T_B1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc1, POS_T_C1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), va2, POS_T_A2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vb2, POS_T_B2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vc2, POS_T_C2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vt, POS_T_D12, 0, font, color, False, False)  
+        v, l = get_arr_val_lev('meter_e_', ('0','1'), ('a', 'b', 'c'), 3)
+        vt, lt = get_arr_val_lev('meter_e_total', (''), ('t'), 3)
+    pos = [POS_T_A1, POS_T_B1, POS_T_C1, POS_T_A2, POS_T_B2, POS_T_C2]
+    u = ['', '', '', '', '', '', '']
+    block_draw_text(disp.dispBuffer(), v, l, u, pos, font, 3)
+    block_draw_text(disp.dispBuffer(), vt, lt, u, [POS_T_D12], font, 3)
 
 
 def draw_out_S():
@@ -304,24 +324,12 @@ def draw_out_S():
     draw_rotated_text(disp.dispBuffer(), "KEY1", POS_H_U, 0, font, color, False, False)  
     draw_rotated_text(disp.dispBuffer(), "KEY2", POS_H_D, 0, font, color, False, False)  
     font = ImageFont.truetype(FONT_T['font'], FONT_T['size'])
-    color = FONT_T['color']
+    color = [FONT_T['color'], (255,255,0), (255,0,0)]
     if (view == 1):
-        vt1 = get_value('sensor_t_0',4)+chr(0xb0)+"C" 
-        vt2 = get_value('sensor_t_1',4)+chr(0xb0)+"C"
-        vt3 = get_value('sensor_t_2',4)+chr(0xb0)+"C"
-        vh1 = get_value('sensor_h_0',4)+"%"
-        vh2 = get_value('sensor_h_1',4)+"%"
-        vh3 = get_value('sensor_h_2',4)+"%"
-        vk1 = get_value('sensor_key_0',4)
-        vk2 = get_value('sensor_key_1',4)
-    draw_rotated_text(disp.dispBuffer(), vt1, POS_T_A1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vt2, POS_T_B1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vt3, POS_T_C1, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vh1, POS_T_A2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vh2, POS_T_B2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vh3, POS_T_C2, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vk1, POS_T_U12, 0, font, color, False, False)  
-    draw_rotated_text(disp.dispBuffer(), vk2, POS_T_D12, 0, font, color, False, False)  
+        v, l = get_arr_val_lev('senso', ('r'), ('t1', 't1', 't3', 'h1', 'h2', 'h3', 'key1', 'key2'), 3)
+    pos = [POS_T_A1, POS_T_B1, POS_T_C1, POS_T_A2, POS_T_B2, POS_T_C2, POS_T_U12, POS_T_D12]
+    u = [chr(0xb0)+'C', chr(0xb0)+'C', chr(0xb0)+'C', '%', '%', '%', '', '']
+    block_draw_text(disp.dispBuffer(), v, l, u, pos, font, 3)
     
 
 def draw_out_N():
@@ -353,28 +361,59 @@ def draw_out_data():
         draw_out_I()
 
 
+
+def beep_on():
+    mygpio.output(PIN_BEEP, True)
+
+def beep_off():
+    mygpio.output(PIN_BEEP, False)
+
+def beep_1():
+    beep_on()
+    time.sleep(0.002)
+    beep_off()
+
+
+def led_off():
+    mygpio.output(PIN_LED_G, False)
+    mygpio.output(PIN_LED_R, False)
+
+def led_on_green():
+    mygpio.output(PIN_LED_G, True)
+    mygpio.output(PIN_LED_R, False)
+    
+def led_on_red():
+    mygpio.output(PIN_LED_G, False)
+    mygpio.output(PIN_LED_R, True)
                 
+def led_on_yellow():
+    mygpio.output(PIN_LED_G, True)
+    mygpio.output(PIN_LED_R, True)
+
+
 try:
 
     vals = redis.StrictRedis(host='localhost', port=6379, db=0)
-
     disp = TJCTM24024SPI(DC, port=PORT, rst=RST, irq=IRQ)
-  
     draw = disp.dispDraw()
+    mygpio = GPIO.GPIO.get_platform_gpio()
 
+    mygpio.setup(PIN_LED_G, GPIO.OUT, GPIO.PUD_OFF)
+    mygpio.setup(PIN_LED_R, GPIO.OUT, GPIO.PUD_OFF)
+    mygpio.setup(PIN_BEEP, GPIO.OUT, GPIO.PUD_OFF)
+    mygpio.output(PIN_LED_G, False)
+    mygpio.output(PIN_LED_R, False)
+    mygpio.output(PIN_BEEP, False)
 
     orient=ORIENT_H
     mode=1
-    view=2
+    view=1
     
     disp.orient = orient
+
     
-
-    draw_screen()
-    
-
-    print ("Start")
-
+#    draw_screen()
+#    print ("Start")
 
     while True:
         draw_screen()
@@ -385,6 +424,7 @@ try:
             view = 1
             draw_element(disp.dispBuffer(), orient, mode, view, EL_KEY_1, True)
             disp.dispDisplay()
+            beep_1()
             time.sleep(0.2)
             draw_screen()
         if (is_press_element(EL_KEY_3)):
@@ -394,6 +434,7 @@ try:
             view = 1
             draw_element(disp.dispBuffer(), orient, mode, view, EL_KEY_3, True)
             disp.dispDisplay()
+            beep_1()
             time.sleep(0.2)
             draw_screen()
 
@@ -404,6 +445,7 @@ try:
                 view = 1
             draw_element(disp.dispBuffer(), orient, mode, view, EL_KEY_2, True)
             disp.dispDisplay()
+            beep_1()
             time.sleep(0.2)
             draw_screen()
 

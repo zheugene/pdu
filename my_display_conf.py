@@ -62,18 +62,18 @@ KEY_COLOR           = dict(line=KEY_COL_LINE, fill=KEY_COL_FILL, text=KEY_COL_TE
 KEY_FONT            = dict(font=KEY_FONT_TYPE, size=KEY_FONT_SIZE)
 
 
-S_HEAD_V            = dict(key=0,  text_v='Voltage',    text_h='Volt',  div=', ',   unit_count=2,   unit=dict([(1,'V'), (2,'%')]))
+S_HEAD_V            = dict(key=0,  text_v='Voltage',    text_h='Volt',  div=', ',   unit_count=1,   unit=dict([(1,'V')]))
 S_HEAD_C            = dict(key=0,  text_v='Current',    text_h='Curr',  div=', ',   unit_count=2,   unit=dict([(1,'A'), (2,'%')]))
-S_HEAD_P            = dict(key=0,  text_v='Power',      text_h='Pwr',   div=', ',   unit_count=2,   unit=dict([(1,'kW'), (2,'%')]))
+S_HEAD_P            = dict(key=0,  text_v='Power',      text_h='Pwr',   div=', ',   unit_count=3,   unit=dict([(1,'kW'), (2,'kvar'), (3,'kVA')]))
 S_HEAD_E            = dict(key=0,  text_v='Energy',     text_h='Engy',  div=', ',   unit_count=1,   unit=dict([(1,'kW/h')]))
 S_HEAD_S            = dict(key=0,  text_v='Sensor',     text_h='Sens',  div='',     unit_count=1,   unit=dict([(1,'')]))
 S_HEAD_N            = dict(key=0,  text_v='Net',        text_h='Net',   div='',     unit_count=1,   unit=dict([(1,'')]))
 S_HEAD_I            = dict(key=0,  text_v='Info',       text_h='Info',  div='',     unit_count=1,   unit=dict([(1,'')]))
 
 S_KEY_1             = dict(key=1,  text_v='<',          text_h='^',     div='',     unit_count=1,   unit=dict([(1,'')]))
-S_KEY_2_V           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=2,   unit=dict([(1,'%'), (2,'V')]))
+S_KEY_2_V           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=1,   unit=dict([(1,'')]))
 S_KEY_2_C           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=2,   unit=dict([(1,'%'), (2,'A')]))
-S_KEY_2_P           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=2,   unit=dict([(1,'%'), (2,'kW')]))
+S_KEY_2_P           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=3,   unit=dict([(1,'kvar'), (2,'kVA'), (3,'kW')]))
 S_KEY_2_E           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=1,   unit=dict([(1,'')]))
 S_KEY_2_S           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=1,   unit=dict([(1,'')]))
 S_KEY_2_N           = dict(key=2,  text_v='',           text_h='',      div='',     unit_count=1,   unit=dict([(1,'')]))

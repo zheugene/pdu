@@ -368,6 +368,11 @@ def lo_byte(word):
 def hi_byte(word):
     return ((word >> 8) & 0xFF)
 
+def to_sign(word):
+    if ((word & 0x8000) == 0):
+        return word
+    else:
+        return (0x7FFF & (0 - int(word)) - 1)
 
 
 
@@ -388,10 +393,14 @@ class M90E36A(object):
         self._spi.set_mode(0)
         self._spi.set_bit_order(SPI.MSBFIRST)
         self._spi.set_clock_hz(100000)
+        self.init()
 
+
+    def init(self):
         self.soft_reset()
         self.configuration_registers_init()        
-
+        self.write_word(ADDR_THDNUTh, int('22000'))
+        self.write_word(ADDR_THDNITh, int('10'))
 
 
     def getIRQ(self):
@@ -939,10 +948,10 @@ class M90E36A(object):
 #   In this document, LLSB means bit 8 of the lower register
 #-------------------------------------------------------------------------------
     def meter_p_a(self):
-        a = float(self.read_word(ADDR_PmeanA))      # ADDR_PmeanALSB not use
-        b = float(self.read_word(ADDR_PmeanB))      # ADDR_PmeanBLSB not use
-        c = float(self.read_word(ADDR_PmeanC))      # ADDR_PmeanCLSB not use
-        t = float(self.read_word(ADDR_PmeanT))*4    # Total (all-phase-sum)     # ADDR_PmeanTLSB not use  
+        a = float(to_sign(self.read_word(ADDR_PmeanA)))      # ADDR_PmeanBLSB not use
+        b = float(to_sign(self.read_word(ADDR_PmeanB)))      # ADDR_PmeanBLSB not use
+        c = float(to_sign(self.read_word(ADDR_PmeanC)))      # ADDR_PmeanCLSB not use
+        t = float(to_sign(self.read_word(ADDR_PmeanT)))*4    # Total (all-phase-sum)     # ADDR_PmeanTLSB not use  
         return (a, b, c, t)
 #-------------------------------------------------------------------------------
 
@@ -967,10 +976,10 @@ class M90E36A(object):
 #   In this document, LLSB means bit 8 of the lower register
 #-------------------------------------------------------------------------------
     def meter_p_ra(self):
-        a = float(self.read_word(ADDR_QmeanA))      # ADDR_QmeanALSB not use
-        b = float(self.read_word(ADDR_QmeanB))      # ADDR_QmeanBLSB not use
-        c = float(self.read_word(ADDR_QmeanC))      # ADDR_QmeanCLSB not use 
-        t = float(self.read_word(ADDR_QmeanT))*4    # Total (all-phase-sum)     # ADDR_QmeanTLSB not use     
+        a = float(to_sign(self.read_word(ADDR_QmeanA)))      # ADDR_QmeanALSB not use
+        b = float(to_sign(self.read_word(ADDR_QmeanB)))      # ADDR_QmeanBLSB not use
+        c = float(to_sign(self.read_word(ADDR_QmeanC)))      # ADDR_QmeanCLSB not use 
+        t = float(to_sign(self.read_word(ADDR_QmeanT)))*4    # Total (all-phase-sum)     # ADDR_QmeanTLSB not use     
         return (a, b, c, t)
 #-------------------------------------------------------------------------------
 
@@ -1188,15 +1197,23 @@ class M90E36A(object):
 #-------------------------------------------------------------------------------
 # Mean Phase Angle
 #-------------------------------------------------------------------------------
-# F9H-FBH PAngleA, PAngleB, PAngleC
+# F9H-FBH PangleA, PangleB, PangleC
 # Type: Read
 # Signed, MSB as the sign bit
 # 1LSB corresponds to 0.1-degree, -180.0°~+180.0°   
 #-------------------------------------------------------------------------------
     def meter_p_angle(self):
         a = float(self.read_word(ADDR_PangleA)) / 10
-        b = float(self.read_word(ADDR_PangleB)) / 10
-        c = float(self.read_word(ADDR_PangleB)) / 10 
+        b = self.read_word(ADDR_PangleB)
+        if ((b and 0x8000) == 0):
+            b = float(b) / 10
+        else:
+            b = 0 - (float(b & 0x7FFF) / 10)
+        c = self.read_word(ADDR_PangleC) 
+        if ((c and 0x8000) == 0):
+            c = float(c) / 10
+        else:
+            c = 0 - (float(c & 0x7FFF) / 10)
         return (a, b, c)
 #-------------------------------------------------------------------------------
 
@@ -1220,7 +1237,7 @@ class M90E36A(object):
 #-------------------------------------------------------------------------------
 # Voltage Phase Angle
 #-------------------------------------------------------------------------------
-# FDH-FFH UAngleA, UAngleB, UAngleC
+# FDH-FFH UangleA, UangleB, UangleC
 # Type: Read
 # UAngle - Always '0'
 # UAngleB, UAngleC - Signed, MSB as the sign bit
@@ -1228,13 +1245,13 @@ class M90E36A(object):
 #   1LSB corresponds to 0.1 degree, -180.0°~+180.0°    
 #-------------------------------------------------------------------------------
     def meter_u_angle(self):
-        a = float(self.read_word(ADDR_PangleA)) / 10       
-        b = self.read_word(ADDR_PangleB)
+        a = float(self.read_word(ADDR_UangleA)) / 10       
+        b = self.read_word(ADDR_UangleB)
         if ((b and 0x8000) == 0):
             b = float(b) / 10
         else:
             b = 0 - (float(b & 0x7FFF) / 10)
-        c = self.read_word(ADDR_PangleB) 
+        c = self.read_word(ADDR_UangleC) 
         if ((c and 0x8000) == 0):
             c = float(c) / 10
         else:

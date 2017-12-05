@@ -4,7 +4,6 @@ from PIL import ImageFont
 
 from XPT2046 import XPT2046 as XPT
 import Adafruit_ILI9341 as ILI
-import Adafruit_GPIO as GPIO
 import Adafruit_GPIO.SPI as SPI
 
 
